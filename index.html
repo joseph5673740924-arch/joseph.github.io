@@ -7,8 +7,7 @@
     <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>F2 收割機</title>
-    
+    <title>F2 複利收割機</title>
     <style>
         :root {
             --bg: #0f172a; --card: #1e293b; --accent: #38bdf8;
@@ -18,32 +17,33 @@
         * { box-sizing: border-box; }
         body { font-family: 'PingFang TC', -apple-system, sans-serif; background: var(--bg); color: var(--text); padding: 15px; margin: 0; display: flex; flex-direction: column; align-items: center; }
         
+        /* 儀表板 */
         .dashboard { width: 100%; max-width: 700px; background: var(--card); padding: 20px; border-radius: 16px; margin-bottom: 20px; border: 1px solid var(--border); box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .u-box { grid-column: span 2; border-top: 1px solid var(--border); padding-top: 15px; margin-top: 10px; display: flex; justify-content: space-between; align-items: center; }
 
+        /* 管理面板 */
         .management-panel { width: 100%; max-width: 700px; background: #1e293b; padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px dashed var(--accent); }
         .input-group { display: flex; gap: 8px; margin-top: 10px; }
         
+        /* 標的列表 */
         .stock-list { width: 100%; max-width: 700px; display: flex; flex-direction: column; gap: 12px; padding-bottom: 40px; }
+        .card { background: var(--card); padding: 16px; border-radius: 12px; display: flex; justify-content: space-between; align-items: stretch; border: 1px solid var(--border); }
         
-        /* 預設桌面版卡片排版 */
-        .card { background: var(--card); padding: 16px; border-radius: 12px; display: flex; justify-content: space-between; align-items: stretch; border: 1px solid var(--border); box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
         .col-left { flex: 1.2; cursor: pointer; display: flex; flex-direction: column; justify-content: center; }
         .col-mid { flex: 1; text-align: center; border-left: 1px solid #334155; border-right: 1px solid #334155; padding: 0 10px; display: flex; flex-direction: column; justify-content: center; }
         .col-right { flex: 1; text-align: right; min-width: 120px; display: flex; flex-direction: column; justify-content: center; padding-left: 10px; }
 
         button { cursor: pointer; border: none; border-radius: 8px; padding: 10px 16px; font-weight: bold; transition: 0.2s; font-size: 14px; }
         .btn-main { background: var(--accent); color: #000; }
-        .btn-main:active { transform: scale(0.95); }
-        .btn-danger { background: transparent; color: var(--down); border: 1px solid var(--down); font-size: 12px; padding: 4px 8px; }
+        .btn-danger { background: transparent; color: var(--down); border: 1px solid var(--down); font-size: 11px; padding: 2px 6px; }
         
         dialog { background: var(--card); color: var(--text); border: 1px solid var(--accent); border-radius: 16px; padding: 25px; width: 90%; max-width: 320px; margin: auto; }
         dialog::backdrop { background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(3px); }
         input { background: #0f172a; border: 1px solid var(--border); color: #fff; padding: 12px; border-radius: 8px; margin-bottom: 12px; width: 100%; font-size: 16px; }
-        label { font-size: 0.9em; color: #cbd5e1; margin-bottom: 6px; display: block; }
+        label { font-size: 0.9em; color: #cbd5e1; margin-bottom: 4px; display: block; }
         
-        .signal { padding: 4px 10px; border-radius: 4px; font-size: 0.85em; margin-top: 5px; display: inline-block; font-weight: bold; }
+        .signal { padding: 4px 10px; border-radius: 4px; font-size: 0.8em; margin-top: 5px; display: inline-block; font-weight: bold; }
         .buy { background: var(--up); color: #000; }
         .sell { background: var(--down); color: #fff; }
         .wait { background: #475569; color: #fff; }
@@ -52,28 +52,19 @@
         .info-label { font-size: 0.8em; color: #94a3b8; }
         .info-value { font-size: 0.95em; color: #f1f5f9; margin-bottom: 4px; }
 
-        /* ======== 手機版 RWD 響應式排版 ======== */
+        /* RWD 手機版適配 */
         @media (max-width: 650px) {
             .grid { grid-template-columns: 1fr; gap: 10px; }
             .grid > div:nth-child(2) { text-align: left; border-top: 1px dashed var(--border); padding-top: 10px; }
             .u-box { flex-direction: column; align-items: flex-start; gap: 12px; }
             .u-box button { width: 100%; padding: 12px; }
-            
             .input-group { flex-direction: column; }
             .input-group button { width: 100%; padding: 12px; }
-
-            .card { flex-direction: column; gap: 12px; padding: 12px; }
+            .card { flex-direction: column; gap: 12px; }
             .col-left, .col-mid, .col-right { border: none; padding: 0; text-align: left; width: 100%; }
-            
-            /* 將歷史驗證區塊改為橫向排列 */
-            .col-mid { border-top: 1px dashed var(--border); border-bottom: 1px dashed var(--border); padding: 12px 0; }
+            .col-mid { border-top: 1px dashed var(--border); border-bottom: 1px dashed var(--border); padding: 10px 0; }
             .col-mid > div:last-child { display: flex; justify-content: space-between; }
-            .col-mid .signal { font-size: 0.75em; }
-
-            /* 現價與按鈕區塊重排 */
-            .col-right { flex-direction: row; justify-content: space-between; align-items: center; padding-top: 5px; }
-            .col-right > div { display: flex; align-items: center; gap: 10px; }
-            .btn-danger { margin-top: 0 !important; }
+            .col-right { flex-direction: row; justify-content: space-between; align-items: center; }
         }
     </style>
 </head>
@@ -84,14 +75,14 @@
             <div>
                 <span class="info-label">總資產 (TA) - 含預扣</span><br>
                 <span id="ta-val" style="font-size: 1.6em; color: var(--accent); font-weight: bold;">$0</span>
-                <div style="margin-top: 5px;">
+                <div style="margin-top: 8px;">
                     <span class="info-label">總庫存成本:</span> <span id="total-cost-val" style="color: #cbd5e1;">$0</span>
                 </div>
             </div>
-            <div>
+            <div style="text-align: right;">
                 <span class="info-label">可用現金 (CR)</span><br>
                 <span id="cash-display" style="font-size: 1.6em; cursor: pointer; border-bottom: 1px dashed #666;" onclick="editCash()">$0</span>
-                <span id="cr-percent" style="color: var(--accent); font-size: 0.9em; margin-left: 10px;">0%</span>
+                <div id="cr-percent" style="color: var(--accent); font-size: 0.9em; margin-top: 5px;">0%</div>
             </div>
             <div class="u-box">
                 <div>
@@ -105,10 +96,10 @@
     </div>
 
     <div class="management-panel">
-        <strong style="color: var(--accent); font-size: 0.9em;">➕ 新增標的：</strong>
+        <strong style="color: var(--accent);">管理標的：</strong>
         <div class="input-group">
-            <input type="text" id="new-id" placeholder="代碼" style="margin: 0;">
-            <input type="text" id="new-name" placeholder="名稱" style="margin: 0;">
+            <input type="text" id="new-id" placeholder="代碼">
+            <input type="text" id="new-name" placeholder="名稱">
             <button class="btn-main" onclick="addStock()">新增</button>
         </div>
     </div>
@@ -117,7 +108,7 @@
 
     <dialog id="trade-modal">
         <h3 id="modal-title" style="margin-top: 0; margin-bottom: 15px; color: var(--accent);">紀錄交易</h3>
-        <label>總收付金額 (含手續費)：</label>
+        <label>總收付金額 (含成本)：</label>
         <input type="number" id="t-total" step="any" inputmode="decimal" oninput="updateCalc()">
         <label>成交股數：</label>
         <input type="number" id="t-qty" value="1000" step="1" inputmode="numeric" oninput="updateCalc()">
@@ -130,7 +121,12 @@
     </dialog>
 
 <script>
-    // --- 註冊 Service Worker (PWA 核心) ---
+    // ==========================================
+    // API 設定區
+    // ==========================================
+    const FUGLE_TOKEN = 'YWE1MGQzNGMtOTgyYy00MzZmLWJjM2ItZjg5NDZlMTg0MzQ5IDAxZjlmNzFhLWJlOWQtNGIyNy05Yzk2LWRkN2UyZDUwOWFiNw=='; // 請將引號內的文字替換為你的富果 API Token
+
+    // 註冊 PWA Service Worker
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('sw.js').catch(err => console.log('SW 註冊失敗', err));
@@ -141,7 +137,7 @@
     let state = JSON.parse(localStorage.getItem('F2_DATA')) || DEFAULT_DATA;
     let activeStockId = null;
     const tradeDialog = document.getElementById('trade-modal');
-    const DEDUCT_RATE = 0.003063; 
+    const DEDUCT_RATE = 0.003063; // 預扣稅費 0.3063%
 
     function save() { localStorage.setItem('F2_DATA', JSON.stringify(state)); render(); }
 
@@ -164,20 +160,23 @@
         if (val !== null && val !== "") { state.cash = parseFloat(val); save(); }
     }
 
+    // 核心邏輯判斷 (三段式防禦 + 單日熔斷)
     function getSignal(price, pLast, CR, yClose) {
         if (!pLast || pLast === 0) return { class: 'wait', text: '設定Plast' };
         if (!price || price === 0) return { class: 'wait', text: '--' };
 
+        // 單日熔斷 (依據昨收價)
         if (yClose && yClose > 0) {
             const dailyDelta = (price - yClose) / yClose;
             if (Math.abs(dailyDelta) > 0.08) return { class: 'halt', text: '單日熔斷' };
         }
 
+        // 累積波幅 (依據 Plast)
         const cumDelta = (price - pLast) / pLast;
         if (cumDelta <= -0.05 && cumDelta >= -0.08) {
-            let buyUnit = 1; 
-            if (CR > 0.15) buyUnit = 3; else if (CR >= 0.10) buyUnit = 2;
-            return { class: 'buy', text: `買入 ${buyUnit}U` };
+            let buyU = 1;
+            if (CR > 0.15) buyU = 3; else if (CR >= 0.10) buyU = 2;
+            return { class: 'buy', text: `買入 ${buyU}U` };
         }
         if (cumDelta >= 0.05 && cumDelta <= 0.08) return { class: 'sell', text: '賣出 2U' };
         if (Math.abs(cumDelta) > 0.08) return { class: 'wait', text: '波段超標' };
@@ -187,30 +186,50 @@
     async function fetchDataAll() {
         const btn = document.querySelector('.btn-main');
         btn.innerText = "同步中...";
+        
         try {
-            const exChList = state.stocks.map(s => `tse_${s.id}.tw|otc_${s.id}.tw`).join('|');
-            const urlTwse = `https://mis.twse.com.tw/stock/api/getStockInfo.jsp?ex_ch=${exChList}&_=${new Date().getTime()}`;
-            const resTwse = await fetch(urlTwse);
-            const dataTwse = await resTwse.json();
-            
-            if (dataTwse.msgArray) {
-                state.stocks.forEach(s => {
-                    const quote = dataTwse.msgArray.find(q => q.c === s.id);
-                    if (quote) {
-                        s.current = parseFloat(quote.z !== '-' ? quote.z : quote.y);
-                        s.yClose = parseFloat(quote.y);
-                    }
-                });
+            if (FUGLE_TOKEN === '換為接口' || !FUGLE_TOKEN) {
+                throw new Error("請先在程式碼設定 FUGLE_TOKEN");
             }
 
+            // 1. 抓取即時報價與昨收價 (富果 API)
+            const symbolList = state.stocks.map(s => s.id).join(',');
+            if (symbolList.length > 0) {
+                const quoteUrl = `https://api.fugle.tw/marketdata/v1.0/stock/snapshot/quotes/${symbolList}`;
+                const resQuote = await fetch(quoteUrl, {
+                    headers: { 'X-FUGLE-API-KEY': FUGLE_TOKEN }
+                });
+                
+                if (resQuote.status === 401) throw new Error("富果 API Token 無效");
+                
+                const dataQuote = await resQuote.json();
+
+                if (dataQuote.data) {
+                    state.stocks.forEach(s => {
+                        const info = dataQuote.data.find(item => item.symbol === s.id);
+                        if (info) {
+                            s.current = info.lastPrice || info.previousClose;
+                            s.yClose = info.previousClose;
+                        }
+                    });
+                }
+            }
+
+            // 2. 歷史資料驗證抓取 (Yahoo Finance + CORS Proxy 以支援手機版)
             await Promise.all(state.stocks.map(async (s) => {
                 try {
-                    let resHist = await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${s.id}.TW?range=5d&interval=1d`);
+                    const yahooUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${s.id}.TW?range=5d&interval=1d`;
+                    const proxyYahoo = `https://corsproxy.io/?${encodeURIComponent(yahooUrl)}`;
+                    
+                    let resHist = await fetch(proxyYahoo);
                     let dataHist = await resHist.json();
+                    
                     if (!dataHist.chart.result) {
-                        resHist = await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${s.id}.TWO?range=5d&interval=1d`);
+                        const yahooUrlOtc = `https://query1.finance.yahoo.com/v8/finance/chart/${s.id}.TWO?range=5d&interval=1d`;
+                        resHist = await fetch(`https://corsproxy.io/?${encodeURIComponent(yahooUrlOtc)}`);
                         dataHist = await resHist.json();
                     }
+
                     if (dataHist.chart.result) {
                         const closes = dataHist.chart.result[0].indicators.quote[0].close.filter(p => p !== null);
                         if (closes.length >= 4) {
@@ -219,13 +238,14 @@
                             s.t3 = closes[closes.length - 4]; 
                         }
                     }
-                } catch (e) { console.warn("Hist Err: " + s.id); }
+                } catch (e) { console.warn("歷史資料抓取失敗: " + s.id); }
             }));
 
             save();
             btn.innerText = "🔄 同步即時報價";
-        } catch (e) { 
-            alert("同步失敗，請檢查網路。"); 
+        } catch (e) {
+            console.error(e);
+            alert("同步失敗: " + e.message);
             btn.innerText = "🔄 同步失敗";
         }
     }
@@ -233,7 +253,6 @@
     function render() {
         let totalNetStockValue = 0; 
         let totalStockCost = 0;
-        
         state.stocks.forEach(s => {
             const price = s.current || s.pLast || 0;
             totalNetStockValue += (s.shares * price) * (1 - DEDUCT_RATE);
@@ -249,10 +268,10 @@
         document.getElementById('cr-percent').innerText = `${(CR * 100).toFixed(1)}%`;
         document.getElementById('u-val').innerText = `$${Math.round(TA * 0.01).toLocaleString()}`;
         
-        const modeHintEl = document.getElementById('mode-hint');
-        if (CR > 0.15) { modeHintEl.innerText = "擴張 (買3/賣2)"; modeHintEl.style.color = "#94a3b8"; }
-        else if (CR >= 0.10) { modeHintEl.innerText = "警戒 (買2/賣2)"; modeHintEl.style.color = "var(--warn)"; }
-        else { modeHintEl.innerText = "防禦 (買1/賣2)"; modeHintEl.style.color = "var(--down)"; }
+        const modeEl = document.getElementById('mode-hint');
+        if (CR > 0.15) { modeEl.innerText = "正常擴張 (買3U/賣2U)"; modeEl.style.color = "#94a3b8"; }
+        else if (CR >= 0.10) { modeEl.innerText = "警戒平衡 (買2U/賣2U)"; modeEl.style.color = "var(--warn)"; }
+        else { modeEl.innerText = "生存防禦 (買1U/賣2U)"; modeEl.style.color = "var(--down)"; }
 
         const list = document.getElementById('main-list');
         list.innerHTML = '';
@@ -261,56 +280,37 @@
             const price = s.current || s.pLast || 0;
             const delta = s.pLast ? (price - s.pLast) / s.pLast : 0;
             const avgCost = s.shares > 0 ? (s.costBasis / s.shares) : 0;
-            const netCurrentValue = (s.shares * price) * (1 - DEDUCT_RATE);
-            const valueColor = s.shares === 0 ? '#f1f5f9' : (netCurrentValue >= s.costBasis ? 'var(--up)' : 'var(--down)');
+            const netVal = (s.shares * price) * (1 - DEDUCT_RATE);
+            const valColor = s.shares === 0 ? '#f1f5f9' : (netVal >= s.costBasis ? 'var(--up)' : 'var(--down)');
 
             const sigCurrent = getSignal(price, s.pLast, CR, s.yClose);
-            const sigT1 = getSignal(s.t1, s.pLast, CR, s.t2); 
-            const sigT2 = getSignal(s.t2, s.pLast, CR, s.t3); 
+            const sigT1 = getSignal(s.t1, s.pLast, CR, s.t2);
+            const sigT2 = getSignal(s.t2, s.pLast, CR, s.t3);
 
             const card = document.createElement('div');
             card.className = 'card';
             card.innerHTML = `
                 <div class="col-left" onclick="openTrade('${s.id}')">
                     <strong style="font-size: 1.2em; color: var(--accent);">${s.id} ${s.name}</strong>
-                    <div style="margin-top: 8px; display: flex; gap: 15px;">
-                        <div>
-                            <span class="info-label">持有成本</span><br>
-                            <span class="info-value">$${Math.round(s.costBasis).toLocaleString()}</span>
-                        </div>
-                        <div>
-                            <span class="info-label">現值 (預扣)</span><br>
-                            <span class="info-value" style="color: ${valueColor}; font-weight: bold;">$${Math.round(netCurrentValue).toLocaleString()}</span>
-                        </div>
+                    <div style="margin-top: 8px; display: flex; gap: 20px;">
+                        <div><span class="info-label">持有成本</span><br><span class="info-value">$${Math.round(s.costBasis).toLocaleString()}</span></div>
+                        <div><span class="info-label">現值 (預扣)</span><br><span class="info-value" style="color: ${valColor}; font-weight: bold;">$${Math.round(netVal).toLocaleString()}</span></div>
                     </div>
-                    <div style="margin-top: 8px; line-height: 1.4;">
-                        <span class="info-label">平均成本:</span> <span class="info-value">${avgCost.toFixed(2)}</span> | 
-                        <span class="info-label">Plast:</span> <span class="info-value" style="color: var(--accent);">${(s.pLast||0).toFixed(2)}</span>
+                    <div style="margin-top: 8px; font-size: 0.9em;">
+                        <span class="info-label">均價:</span> ${avgCost.toFixed(2)} | <span class="info-label">Plast:</span> <span style="color:var(--accent)">${(s.pLast||0).toFixed(2)}</span>
                     </div>
                 </div>
-                
                 <div class="col-mid">
-                    <div style="font-size: 0.75em; color: #94a3b8; margin-bottom: 5px;">歷史狀態驗證 (T-2, T-1)</div>
+                    <div style="font-size: 0.75em; color: #94a3b8; margin-bottom: 5px;">歷史狀態驗證</div>
                     <div>
-                        <div style="text-align: left;">
-                            <span class="info-label">${s.t2 > 0 ? s.t2.toFixed(1) : '--'}</span>
-                            <span class="signal ${sigT2.class}" style="margin-left: 5px;">${sigT2.text}</span>
-                        </div>
-                        <div style="text-align: right;">
-                            <span class="info-label">${s.t1 > 0 ? s.t1.toFixed(1) : '--'}</span>
-                            <span class="signal ${sigT1.class}" style="margin-left: 5px;">${sigT1.text}</span>
-                        </div>
+                        <div style="text-align:left"><span class="info-label">${s.t2 > 0 ? s.t2.toFixed(1) : '--'}</span> <span class="signal ${sigT2.class}">${sigT2.text}</span></div>
+                        <div style="text-align:right"><span class="info-label">${s.t1 > 0 ? s.t1.toFixed(1) : '--'}</span> <span class="signal ${sigT1.class}">${sigT1.text}</span></div>
                     </div>
                 </div>
-
                 <div class="col-right">
                     <div>
-                        <div style="color: ${delta >= 0 ? 'var(--up)' : 'var(--down)'}; font-weight: bold; font-size: 1.4em;">
-                            ${price.toFixed(2)}
-                        </div>
-                        <div style="font-size: 0.85em; color: ${delta >= 0 ? 'var(--up)' : 'var(--down)'}; margin-left: 5px;">
-                            (${(delta * 100).toFixed(2)}%)
-                        </div>
+                        <div style="color: ${delta>=0?'var(--up)':'var(--down)'}; font-weight:bold; font-size:1.3em;">${price.toFixed(2)}</div>
+                        <div style="font-size:0.8em; color: ${delta>=0?'var(--up)':'var(--down)'}; margin-left:5px;">(${(delta*100).toFixed(2)}%)</div>
                     </div>
                     <div>
                         <span class="signal ${sigCurrent.class}">${sigCurrent.text}</span>
@@ -345,16 +345,17 @@
         const s = state.stocks.find(x => x.id === activeStockId);
         if (isNaN(total) || isNaN(q)) return;
 
-        if (isBuy) {
-            state.cash -= total; s.shares += q; s.costBasis += total;
+        if (isBuy) { 
+            state.cash -= total; s.shares += q; s.costBasis += total; 
         } else {
             if(q > s.shares) return alert("股數不足");
-            const portion = q / s.shares;
-            state.cash += total; s.costBasis -= (s.costBasis * portion); s.shares -= q;
+            state.cash += total; s.costBasis -= (s.costBasis * (q / s.shares)); s.shares -= q;
         }
         s.pLast = total / q;
-        save(); closeModal();
+        save(); 
+        closeModal();
     }
+    
     render();
 </script>
 </body>
